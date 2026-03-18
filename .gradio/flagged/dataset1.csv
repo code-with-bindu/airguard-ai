@@ -1,0 +1,3 @@
+AQI Level (0–500),Age,Daily Outdoor Hours,Smoking Status,Exercise Frequency,Respiratory Condition,output,timestamp
+334,41,8,Heavy,Rarely,COPD,,2026-03-18 21:22:05.613166
+320,65,8,Heavy,Rarely,COPD,,2026-03-18 21:23:10.689570

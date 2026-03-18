@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AirGuard AI — Lung Risk Predictor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --subtle: #94a3b8;
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --blue-light: #eff6ff;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --green-border: #bbf7d0;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --amber-border: #fde68a;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --red-border: #fecaca;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.logo-dot {
+  width: 10px; height: 10px;
+  background: var(--blue);
+  border-radius: 50%;
+}
+
+.header-badge {
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid #bfdbfe;
+  letter-spacing: 0.03em;
+}
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  padding: 64px 48px;
+  color: white;
+  text-align: center;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 99px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  font-size: 17px;
+  opacity: 0.85;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 48px 80px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; padding: 28px 20px; }
+  header, .hero { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-head-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--blue-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.card-head-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.card-head-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+/* ── FORM ROWS ── */
+.form-body { padding: 8px 0; }
+
+.form-field {
+  padding: 16px 26px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.15s;
+}
+
+.form-field:last-child { border-bottom: none; }
+.form-field:hover { background: #fafbff; }
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.field-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-light);
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+
+/* Range */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2.5px solid var(--blue);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+  transition: transform 0.15s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Select */
+select {
+  width: 100%;
+  padding: 11px 14px;
+  background: #f8fafc;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='M3 5l4 4 4-4' stroke='%232563eb' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+/* ── BUTTON ── */
+.predict-btn {
+  margin: 20px 26px 26px;
+  width: calc(100% - 52px);
+  padding: 16px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 18px rgba(37,99,235,0.35);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.predict-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37,99,235,0.4);
+}
+
+.predict-btn:active { transform: translateY(0); }
+
+.predict-btn.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ── RESULT PANEL ── */
+#result-panel { display: none; }
+#result-panel.show { display: block; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Empty state */
+.empty-state {
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.empty-icon { font-size: 52px; margin-bottom: 16px; }
+.empty-title { font-size: 17px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--subtle); }
+
+/* Risk banner */
+.risk-banner {
+  padding: 28px 28px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.risk-level-text {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.risk-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 320px;
+  opacity: 0.85;
+}
+
+.confidence-box {
+  text-align: center;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 16px 24px;
+  border: 1px solid rgba(255,255,255,0.8);
+  min-width: 120px;
+}
+
+.confidence-num {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.confidence-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+/* Probability bars */
+.prob-section {
+  padding: 22px 28px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.prob-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.prob-row { margin-bottom: 12px; }
+.prob-row:last-child { margin-bottom: 0; }
+
+.prob-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.prob-name { font-size: 13px; font-weight: 600; }
+.prob-pct  { font-size: 13px; font-weight: 700; }
+
+.prob-track {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prob-fill {
+  height: 100%;
+  border-radius: 99px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 22px 22px;
+}
+
+.stat-box {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 6px;
+}
+
+.stat-value { font-size: 17px; font-weight: 700; color: var(--text); }
+.stat-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* Recommendation */
+.rec-box {
+  margin: 0 22px 22px;
+  padding: 18px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.rec-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.rec-text { font-size: 14px; line-height: 1.65; color: var(--text); }
+
+/* Footer */
+.page-footer {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 24px 48px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--subtle);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    AirGuard AI
+  </div>
+  <div class="header-badge">🫁 Lung Risk Predictor</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">🤖 AI-Powered · Random Forest Model</div>
+  <h1>Predict Your Lung<br>Health Risk</h1>
+  <p>Enter your air quality exposure and lifestyle data. Our trained ML model predicts your lung health risk in real time.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT: INPUT FORM -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-icon">📝</div>
+      <div>
+        <div class="card-head-title">Your Health Profile</div>
+        <div class="card-head-sub">6 inputs · takes 30 seconds</div>
+      </div>
+    </div>
+
+    <div class="form-body">
+
+      <div class="form-field">
+        <div class="field-label">
+          AQI Level
+          <span class="field-val" id="aqi-val">120</span>
+        </div>
+        <input type="range" id="aqi" min="0" max="500" value="120" step="1"
+               oninput="document.getElementById('aqi-val').textContent=this.value">
+      </div>
+
+      <div class="form-field">
+        <div class="field-label">
+          Age
+          <span class="field-val" id="age-val">28</span>
+        </div>
+        <input type="range" id="age" min="5" max="90" value="28" step="1"
+               oninput="document.getElementById('age-val').textContent=this.value">
+      </div>
+
+      <div class="form-field">
+        <div class="field-label">
+          Daily Outdoor Hours
+          <span class="field-val" id="out-val">3h</span>
+        </div>
+        <input type="range" id="outdoor" min="0" max="12" value="3" step="0.5"
+               oninput="document.getElementById('out-val').textContent=this.value+'h'">
+      </div>
+
+      <div class="form-field">
+        <div class="field-label">Smoking Status</div>
+        <select id="smoking">
+          <option value="0">🚭 Non-smoker</option>
+          <option value="1">🚬 Occasional</option>
+          <option value="2">🚬 Regular</option>
+          <option value="3">🚬 Heavy Smoker</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <div class="field-label">Exercise Frequency</div>
+        <select id="exercise">
+          <option value="3">🏃 Daily</option>
+          <option value="2" selected>🏃 3–5× per week</option>
+          <option value="1">🚶 1–2× per week</option>
+          <option value="0">🛋️ Rarely</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <div class="field-label">Respiratory Condition</div>
+        <select id="condition">
+          <option value="0">✅ None</option>
+          <option value="1">😮‍💨 Mild Asthma</option>
+          <option value="2">🫁 Bronchitis</option>
+          <option value="3">⚠️ COPD</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button class="predict-btn" id="predict-btn" onclick="runPredict()">
+      <span id="btn-text">🔍 Predict Lung Risk</span>
+    </button>
+  </div>
+
+  <!-- RIGHT: RESULT -->
+  <div>
+
+    <!-- Empty state -->
+    <div class="card" id="empty-card">
+      <div class="empty-state">
+        <div class="empty-icon">🫁</div>
+        <div class="empty-title">Your result will appear here</div>
+        <div class="empty-sub">Fill in your details and click Predict Lung Risk</div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="result-panel">
+
+      <!-- Risk Banner -->
+      <div class="card" id="risk-banner" style="margin-bottom:20px;">
+        <div class="risk-banner" id="banner-inner"></div>
+        <div class="prob-section">
+          <div class="prob-title">Prediction Breakdown</div>
+          <div class="prob-row">
+            <div class="prob-top">
+              <span class="prob-name" style="color:#16a34a">🟢 Low Risk</span>
+              <span class="prob-pct" id="p-low" style="color:#16a34a">—</span>
+            </div>
+            <div class="prob-track">
+              <div class="prob-fill" id="bar-low" style="background:linear-gradient(90deg,#4ade80,#16a34a)"></div>
+            </div>
+          </div>
+          <div class="prob-row">
+            <div class="prob-top">
+              <span class="prob-name" style="color:#d97706">🟡 Moderate Risk</span>
+              <span class="prob-pct" id="p-mod" style="color:#d97706">—</span>
+            </div>
+            <div class="prob-track">
+              <div class="prob-fill" id="bar-mod" style="background:linear-gradient(90deg,#fbbf24,#d97706)"></div>
+            </div>
+          </div>
+          <div class="prob-row">
+            <div class="prob-top">
+              <span class="prob-name" style="color:#dc2626">🔴 High Risk</span>
+              <span class="prob-pct" id="p-high" style="color:#dc2626">—</span>
+            </div>
+            <div class="prob-track">
+              <div class="prob-fill" id="bar-high" style="background:linear-gradient(90deg,#f87171,#dc2626)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats + Rec -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-icon">📊</div>
+          <div>
+            <div class="card-head-title">Input Summary</div>
+            <div class="card-head-sub">Your entered values</div>
+          </div>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="rec-box">
+          <div class="rec-label">💡 Recommendation</div>
+          <div class="rec-text" id="rec-text">—</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  🤖 Random Forest Classifier · Trained on 50,000 synthetic records · 91.4% test accuracy · Python & scikit-learn
+</div>
+
+<script>
+  const AQI_CATS = [[50,'Good'],[100,'Moderate'],[150,'Unhealthy for Sensitive Groups'],[200,'Unhealthy'],[300,'Very Unhealthy'],[500,'Hazardous']];
+  function aqiCat(v){ return (AQI_CATS.find(([m])=>v<=m)||AQI_CATS[5])[1]; }
+
+  const SMOKING   = ["Non-smoker","Occasional","Regular","Heavy Smoker"];
+  const EXERCISE  = ["Rarely","1-2x/week","3-5x/week","Daily"];
+  const CONDITION = ["None","Mild Asthma","Bronchitis","COPD"];
+
+  async function runPredict() {
+    const btn  = document.getElementById('predict-btn');
+    const btxt = document.getElementById('btn-text');
+    btn.classList.add('loading');
+    btxt.textContent = '⏳ Analyzing...';
+
+    const aqi      = +document.getElementById('aqi').value;
+    const age      = +document.getElementById('age').value;
+    const outdoor  = +document.getElementById('outdoor').value;
+    const smoking  = +document.getElementById('smoking').value;
+    const exercise = +document.getElementById('exercise').value;
+    const cond     = +document.getElementById('condition').value;
+
+    try {
+      const res  = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          aqi, age,
+          outdoor_hours: outdoor,
+          smoking, exercise,
+          condition: cond
+        })
+      });
+      const data = await res.json();
+      renderResult(data, aqi, age, outdoor, smoking, exercise, cond);
+    } catch(e) {
+      btxt.textContent = '❌ Error — is server running?';
+      btn.classList.remove('loading');
+      return;
+    }
+
+    btn.classList.remove('loading');
+    btxt.textContent = '🔍 Predict Lung Risk';
+  }
+
+  function renderResult(d, aqi, age, outdoor, smoking, exercise, cond) {
+    const colors = {
+      0: {color:'#16a34a', bg:'linear-gradient(135deg,#dcfce7,#bbf7d0)', border:'#86efac'},
+      1: {color:'#d97706', bg:'linear-gradient(135deg,#fef9c3,#fde68a)', border:'#fcd34d'},
+      2: {color:'#dc2626', bg:'linear-gradient(135deg,#fee2e2,#fecaca)', border:'#f87171'},
+    };
+    const tips = [
+      "✅ Check AQI daily using IQAir or SAFAR. Exercise in early morning when pollution is lowest. Keep indoor plants for air purification.",
+      "⚠️ Wear an N95 mask on high-AQI days. Use a HEPA air purifier in your bedroom. Reduce outdoor activity when AQI exceeds 150.",
+      "🚨 Consult a pulmonologist urgently. Book a spirometry test. Seal windows on bad AQI days and run air purifier continuously."
+    ];
+
+    const {color, bg, border} = colors[d.prediction];
+    const icons = ['🟢','🟡','🔴'];
+
+    // Banner
+    document.getElementById('banner-inner').innerHTML = `
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${color};opacity:0.7;margin-bottom:8px;">Prediction Result</div>
+        <div style="font-size:30px;font-weight:800;color:${color};letter-spacing:-0.5px;margin-bottom:8px;">${icons[d.prediction]} ${d.label}</div>
+        <div style="font-size:14px;color:#475569;line-height:1.6;max-width:340px;">
+          ${d.prediction===0?'Your lung profile looks healthy. Keep maintaining your good habits.':
+            d.prediction===1?'Some risk factors need attention. Take precautions on high-AQI days.':
+            'Significant lung risk detected. Medical consultation is recommended urgently.'}
+        </div>
+      </div>
+      <div style="text-align:center;background:white;border-radius:14px;padding:20px 28px;border:1.5px solid ${border};box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;">Confidence</div>
+        <div style="font-size:44px;font-weight:800;color:${color};line-height:1.1;letter-spacing:-1px;">${d.confidence}%</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">model score</div>
+      </div>
+    `;
+    document.getElementById('risk-banner').style.border = `1.5px solid ${border}`;
+
+    // Bars
+    document.getElementById('p-low').textContent  = d.proba_low+'%';
+    document.getElementById('p-mod').textContent  = d.proba_moderate+'%';
+    document.getElementById('p-high').textContent = d.proba_high+'%';
+    setTimeout(()=>{
+      document.getElementById('bar-low').style.width  = d.proba_low+'%';
+      document.getElementById('bar-mod').style.width  = d.proba_moderate+'%';
+      document.getElementById('bar-high').style.width = d.proba_high+'%';
+    }, 100);
+
+    // Stats
+    document.getElementById('stats-grid').innerHTML = `
+      <div class="stat-box">
+        <div class="stat-label">AQI Level</div>
+        <div class="stat-value">${aqi}</div>
+        <div class="stat-sub">${aqiCat(aqi)}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Age & Exposure</div>
+        <div class="stat-value">${age} yrs</div>
+        <div class="stat-sub">${outdoor}h outdoor/day</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Smoking</div>
+        <div class="stat-value">${SMOKING[smoking]}</div>
+        <div class="stat-sub">Exercise: ${EXERCISE[exercise]}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Condition</div>
+        <div class="stat-value">${CONDITION[cond]}</div>
+        <div class="stat-sub">Pre-existing diagnosis</div>
+      </div>
+    `;
+
+    // Rec
+    document.getElementById('rec-text').textContent = tips[d.prediction];
+
+    // Show
+    document.getElementById('empty-card').style.display = 'none';
+    const rp = document.getElementById('result-panel');
+    rp.classList.remove('show');
+    void rp.offsetWidth;
+    rp.classList.add('show');
+  }
+</script>
+</body>
+</html>
