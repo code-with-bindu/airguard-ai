@@ -10,7 +10,7 @@
 ---
 
 ## 🔴 Live Demo
-👉 [https://huggingface.co/spaces/HumanSpace/airguard-ai)
+👉 [Try it on Hugging Face](https://huggingface.co/spaces/HumanSpace/airguard-ai)
 
 ---
 
